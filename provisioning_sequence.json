@@ -1,7 +1,7 @@
 {
   "description": "",
   "version": "1.0",
-  "master_data_source": "data/sites.csv",
+  "master_data_source": "sites.csv",
   "master_iterate_over": "sites",
   "sequence": [
     {
@@ -89,7 +89,7 @@
       "operation": "add_network_range",
       "enabled": true,
       "wait_seconds": 1,
-      "data_source_file": "data/networks.csv",
+      "data_source_file": "networks.csv",
       "iterate_over": "networks",
       "store_result_as": "network_range",
       "join_on": {
@@ -116,7 +116,7 @@
       "operation": "add_host",
       "enabled": true,
       "wait_seconds": 1,
-      "data_source_file": "data/hosts.csv",
+      "data_source_file": "hosts.csv",
       "iterate_over": "hosts",
       "iteration_scope": "global",
       "store_result_as": "host",
