@@ -57,7 +57,7 @@ log_level = DEBUG
 
 ---
 
-## 🔐 Variables d'Environnement
+## Variables d'Environnement
 
 ### Format
 
@@ -219,7 +219,7 @@ Résout depuis le contexte global (résultats précédents).
 
 ---
 
-## 📊 Logs et Résultats
+## Logs et Résultats
 
 ### Logs Générés
 
