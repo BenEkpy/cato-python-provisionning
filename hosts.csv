@@ -1,0 +1,9 @@
+site_name,host_name,host_ip
+Paris-HQ,Server-Web-01,192.168.1.10
+Paris-HQ,Server-DB-01,192.168.1.20
+Paris-HQ,Server-Dev-01,192.168.2.10
+Paris-HQ,Server-Test-01,192.168.2.20
+Paris-HQ,AP-Guest-01,192.168.3.5
+Lyon-Branch,Server-Dev-01,192.168.210.10
+Lyon-Branch,Server-Test-01,192.168.210.20
+Lyon-Branch,AP-Guest-01,192.168.21.5

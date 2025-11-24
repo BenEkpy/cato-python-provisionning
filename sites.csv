@@ -1,0 +1,4 @@
+site_name,site_type,connection_type,wan1_bw_upstream,wan1_bw_downstream,wan1_precedence,wan2_bw_upstream,wan2_bw_downstream,wan2_precedence,description,native_range,country,city,timezone
+Paris-HQ,HEADQUARTERS,SOCKET_X1500,100,100,ACTIVE,25,25,ACTIVE,Siege social Paris,192.168.10.0/24,FR,Paris,Europe/Paris
+Lyon-Branch,BRANCH,SOCKET_X1500,50,50,ACTIVE,50,50,ACTIVE,Agence Lyon,192.168.20.0/24,FR,Lyon,Europe/Paris
+Marseille-Branch,BRANCH,SOCKET_X1500,100,100,ACTIVE,25,25,PASSIVE,Agence Marseille,192.168.30.0/24,FR,Marseille,Europe/Paris
