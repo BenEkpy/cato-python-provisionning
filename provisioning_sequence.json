@@ -1,0 +1,137 @@
+{
+  "description": "",
+  "version": "1.0",
+  "master_data_source": "data/sites.csv",
+  "master_iterate_over": "sites",
+  "sequence": [
+    {
+      "step_name": "Etape 1 - Creer le site",
+      "operation": "add_site",
+      "enabled": true,
+      "wait_seconds": 2,
+      "store_result_as": "site",
+      "graphql_query": "mutation addSite($accountId: ID!, $name: String!, $siteType: SiteType!, $description: String, $nativeNetworkRange: IPSubnet!, $city: String, $countryCode: String!, $stateCode: String, $timezone: String!, $connectionType: SiteConnectionTypeEnum!) { site(accountId: $accountId) { addSocketSite(input: { name: $name siteType: $siteType description: $description nativeNetworkRange: $nativeNetworkRange siteLocation: { city: $city countryCode: $countryCode stateCode: $stateCode timezone: $timezone } connectionType: $connectionType }) { siteId } } }",
+      "params": {
+        "name": "@site_name",
+        "siteType": "@site_type",
+        "description": "@description",
+        "nativeNetworkRange": "@native_range",
+        "city": "@city",
+        "countryCode": "@country",
+        "stateCode": "@state",
+        "timezone": "@timezone",
+        "connectionType": "@connection_type"
+      }
+    },
+    {
+      "step_name": "Etape 2 - Configuration Interface WAN1",
+      "operation": "add_wan1",
+      "enabled": true,
+      "wait_seconds": 1,
+      "graphql_query": "mutation updateSocketInterface ($accountId: ID!, $siteId: ID!, $socketInterfaceId: SocketInterfaceIDEnum!, $input: UpdateSocketInterfaceInput!) {  site(accountId: $accountId) {  updateSocketInterface (siteId: $siteId, socketInterfaceId: $socketInterfaceId, input: $input) {  siteId  socketInterfaceId  }  } }",
+      "params": {
+        "siteId": "${site.data.site.addSocketSite.siteId}",
+        "socketInterfaceId": "WAN1",
+        "input": {
+          "name": "WAN1",
+          "destType": "CATO",
+          "bandwidth": {
+            "upstreamBandwidth": "@wan1_bw_upstream",
+            "downstreamBandwidth": "@wan1_bw_downstream"
+          },
+          "wan": {
+            "role": "wan_1",
+            "precedence": "@wan1_precedence"
+          }
+        }
+      }
+    },
+    {
+      "step_name": "Etape 3 - Configuration Interface WAN2",
+      "operation": "add_wan2",
+      "enabled": true,
+      "wait_seconds": 1,
+      "graphql_query": "mutation updateSocketInterface ($accountId: ID!, $siteId: ID!, $socketInterfaceId: SocketInterfaceIDEnum!, $input: UpdateSocketInterfaceInput!) {  site(accountId: $accountId) {  updateSocketInterface (siteId: $siteId, socketInterfaceId: $socketInterfaceId, input: $input) {  siteId  socketInterfaceId  }  } }",
+      "params": {
+        "siteId": "${site.data.site.addSocketSite.siteId}",
+        "socketInterfaceId": "WAN2",
+        "input": {
+          "name": "WAN2",
+          "destType": "CATO",
+          "bandwidth": {
+            "upstreamBandwidth": "@wan2_bw_upstream",
+            "downstreamBandwidth": "@wan2_bw_downstream"
+          },
+          "wan": {
+            "role": "wan_2",
+            "precedence": "@wan2_precedence"
+          }
+        }
+      }
+    },
+    {
+      "step_name": "Etape 4 - Recuperer l'interface LAN",
+      "operation": "get_lan_interfaces",
+      "enabled": true,
+      "wait_seconds": 1,
+      "store_result_as": "lan_interface",
+      "graphql_query": "query entityLookup ($accountId: ID!, $type: EntityType!, $parent: EntityInput!) { entityLookup (accountID: $accountId, type: $type, parent: $parent) { items { entity { id name type } description helperFields } } }",
+      "params": {
+        "type": "networkInterface",
+        "parent": {
+          "id": "${site.data.site.addSocketSite.siteId}",
+          "type": "site"
+        }
+      }
+    },
+    {
+      "step_name": "Etape 5 - Creer les reseaux LAN",
+      "operation": "add_network_range",
+      "enabled": true,
+      "wait_seconds": 1,
+      "data_source_file": "data/networks.csv",
+      "iterate_over": "networks",
+      "store_result_as": "network_range",
+      "join_on": {
+        "local_key": "site_name",
+        "context_key": "site_name"
+      },
+      "condition": {
+        "field": "@network_type",
+        "operator": "==",
+        "value": "VLAN"
+      },
+      "graphql_query": "mutation addNetworkRange($accountId: ID!, $lanSocketInterfaceId: ID!, $name: String!, $subnet: IPSubnet!, $rangeType: SubnetType!, $local_ip: IPAddress, $vlan: Int) { site(accountId: $accountId) { addNetworkRange(lanSocketInterfaceId: $lanSocketInterfaceId, input: { name: $name subnet: $subnet rangeType: $rangeType localIp: $local_ip vlan: $vlan }) { networkRangeId } } }",
+      "params": {
+        "lanSocketInterfaceId": "${lan_interface.data.entityLookup.items.0.entity.id}",
+        "name": "@lan_name",
+        "subnet": "@lan_subnet",
+        "rangeType": "VLAN",
+        "local_ip": "@local_ip",
+        "vlan": "@lan_vlan"
+      }
+    },
+    {
+      "step_name": "Étape 6 - Créer les hôtes",
+      "operation": "add_host",
+      "enabled": true,
+      "wait_seconds": 1,
+      "data_source_file": "data/hosts.csv",
+      "iterate_over": "hosts",
+      "iteration_scope": "global",
+      "store_result_as": "host",
+      "join_on": {
+        "local_key": "site_name",
+        "context_key": "site_name"
+      },
+      "graphql_query": "mutation addStaticHost($accountId:ID!,$siteId: ID!, $input: AddStaticHostInput!) { site(accountId:$accountId){ addStaticHost(siteId:$siteId, input:$input){  hostId  }}}",
+      "params": {
+        "siteId": "${site.data.site.addSocketSite.siteId}",
+        "input": {
+          "name": "@host_name",
+          "ip": "@host_ip"
+        }
+      }
+    }
+  ]
+}
