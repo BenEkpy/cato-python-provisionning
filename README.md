@@ -14,10 +14,8 @@ pip install requests rich
 projet/
 ├── cato_provisioning.py
 ├── config.ini
-├── data
-  ├── sites.csv
-  ├── networks.csv
-  ├── hosts.csv
+├── exemple_sites.csv
+├── exemple_networks.csv
 └── provisioning_sequence.json
 ```
 
